@@ -1,19 +1,18 @@
-# MightyLiteDB
-
-Make way, for the strongest of the smallest database has come.
+# Apis [WIP]
 
 ---
 
 ### What is this?
 
-Supposed to be a key-value store running on multiple nodes with basic database features when it will be in its final form.
+Supposed to be a key-value store running on multiple nodes with basic database features when it is completed.
 
-### How is this gonna happen?
+### Phases
 
-In planning phase right now. If you're interested in contributing that's awesome, I'll be putting up issues, check those out.
-
-### Why this name?
-
-I'm sorry.
-
-
+- [x]  Simple key-value store with REST API and `map` as the data structure.
+- [ ]  Expand map data structure with more data types.
+- [ ]  Expand API commands.
+- [ ]  Change from `map` data structure to B-Tree. 
+- [ ]  Introduce batch operations.
+- [ ]  Add multi-user support.
+- [ ]  Add atomicity features.
+- [ ]  Make database distributed. 
