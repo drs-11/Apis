@@ -1,61 +1,68 @@
 package handlers
 
 import (
-	"MightyLiteDB/internal/utils"
-	"MightyLiteDB/pkg/storage"
-	"fmt"
+	"Apis/internal/utils"
+	"Apis/pkg/storage"
+	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-func createData(w http.ResponseWriter, r *http.Request) {
-	var newData storage.Data
-	utils.ConvertJsonToData(r.Body, &newData)
-	storage.DataMap[newData.Key] = &newData
-
-	w.WriteHeader(http.StatusOK)
-	log.Println("Data created:", newData.String())
+type Handler struct {
+	DB *storage.DataBase
 }
 
-func getData(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	key := vars["key"]
+func (h *Handler) HandleRequests() {
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/user", h.createUser).Methods("POST")
+	router.HandleFunc("/user/database", h.createTable).Methods("POST")
+	router.HandleFunc("/user/database/items", h.putData).Methods("POST")
+	router.HandleFunc("/user/database/items", h.getData).Methods("GET")
+	router.HandleFunc("/user/database/items", h.deleteData).Methods("DELETE")
+	log.Fatal(http.ListenAndServe(":8080", router))
+}
 
+func (h *Handler) createUser(w http.ResponseWriter, r *http.Request) {
+	var payload storage.PayLoad
+	var data []byte
+	r.Body.Read(data)
+	json.Unmarshal(data, &payload)
+	h.DB.CreateUser(payload.Username, payload.Password)
+}
+
+func (h *Handler) createTable(w http.ResponseWriter, r *http.Request) {
+	var payload storage.PayLoad
+	var data []byte
+	r.Body.Read(data)
+	json.Unmarshal(data, &payload)
+	h.DB.CreateTable(&payload)
+}
+
+func (h *Handler) putData(w http.ResponseWriter, r *http.Request) {
+	var payload storage.PayLoad
+	var data []byte
+	r.Body.Read(data)
+	json.Unmarshal(data, &payload)
+	h.DB.AddItems(&payload)
+}
+
+func (h *Handler) getData(w http.ResponseWriter, r *http.Request) {
+	var payload storage.PayLoad
+	var data []byte
+	r.Body.Read(data)
+	json.Unmarshal(data, &payload)
+	items := h.DB.GetItems(&payload)
 	w.Header().Set("Content-Type", "pkglication/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(utils.ConvertDataToJson(storage.DataMap[key]))
-	log.Println("Found requested Data:", storage.DataMap[key].String())
+	w.Write(utils.ConvertDataToJson(items))
 }
 
-func deleteData(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	key := vars["key"]
-
-	val, ok := storage.DataMap[key]
-	if !ok {
-		log.Println("Data not found..cant't delete.")
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Key not found!"))
-		return
-	}
-	delete(storage.DataMap, key)
-	log.Println("Data found. Deleting...")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(val.String()))
-}
-
-func homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Is this working?")
-	log.Println("Endpoint Hit: Homepage")
-}
-
-func HandleRequests() {
-	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/", homePage)
-	router.HandleFunc("/store", createData).Methods("POST")
-	router.HandleFunc("/store/{key}", getData).Methods("GET")
-	router.HandleFunc("/store/{key}", deleteData).Methods("DELETE")
-	log.Fatal(http.ListenAndServe(":8080", router))
+func (h *Handler) deleteData(w http.ResponseWriter, r *http.Request) {
+	var payload storage.PayLoad
+	var data []byte
+	r.Body.Read(data)
+	json.Unmarshal(data, &payload)
+	h.DB.DeleteItems(&payload)
 }

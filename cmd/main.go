@@ -1,11 +1,12 @@
 package main
 
 import (
-	"MightyLiteDB/internal/handlers"
-	"MightyLiteDB/pkg/storage"
+	"Apis/internal/handlers"
+	"Apis/pkg/storage"
 )
 
 func main() {
-	storage.DataMap = make(map[string]*storage.Data)
-	handlers.HandleRequests()
+	db := storage.InitDB()
+	handler := handlers.Handler{DB: db}
+	handler.HandleRequests()
 }

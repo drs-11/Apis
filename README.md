@@ -1,4 +1,4 @@
-# Apis [WIP]
+# Apis
 
 ---
 
@@ -9,10 +9,10 @@ Supposed to be a key-value store running on multiple nodes with basic database f
 ### Phases
 
 - [x]  Simple key-value store with REST API and `map` as the data structure.
-- [ ]  Expand map data structure with more data types.
+- [x]  Expand map data structure with more data types.
+- [x]  Introduce batch operations.
+- [x]  Add multi-user support.
 - [ ]  Expand API commands.
 - [ ]  Change from `map` data structure to B-Tree. 
-- [ ]  Introduce batch operations.
-- [ ]  Add multi-user support.
 - [ ]  Add atomicity features.
-- [ ]  Make database distributed. 
+- [ ]  Increase database nodes. 
